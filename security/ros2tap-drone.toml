@@ -1,0 +1,23 @@
+# ros2tap policy for the PX4 drone demo (ros2tap-drone build, branch drone-geofence).
+#
+#   sudo ../ros2tap-drone/target/release/ros2tap --config security/ros2tap-drone.toml
+#   (with flight/pose_feed.py running: it writes the drone position the fence reads)
+#
+# Coordinates: PX4 local NED frame, metres from home (the Colosseum): x north, y east.
+
+[topics]
+"/fmu/in/trajectory_setpoint" = "px4_msgs/msg/TrajectorySetpoint"
+
+# No-fly zone, about 390 x 380 m: the Vittoriano (Altare della Patria), Piazza Venezia and the
+# Capitoline. When the drone is within the margin and its route (where it is -> the setpoint
+# target) enters the zone, every setpoint is rewritten to "hold here", whoever publishes it;
+# a setpoint whose route stays out (e.g. back home) releases the fence.
+# Pilot places: Altare della Patria inside (stop ~210 m short of it); the Pantheon route
+# crosses the zone (stopped at the edge); Trevi, Roman Forum, Circus Maximus, Palatine: free.
+[[geofences]]
+name       = "Vittoriano no-fly zone"
+pose_file  = "/tmp/ros2tap-drone-pose.json"
+polygon    = [[330.0, -1000.0], [720.0, -1000.0], [720.0, -620.0], [330.0, -620.0]]
+margin     = 40.0
+hysteresis = 10.0       # release only beyond 50 m: no flapping while held at the edge
+stop       = ["/fmu/in/trajectory_setpoint"]

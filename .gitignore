@@ -1,0 +1,16 @@
+# ROS 2 workspace: sources are cloned by setup.sh at pinned versions, outputs are built.
+ws/build/
+ws/install/
+ws/log/
+ws/src/
+ws/build.log
+ws/build2.log
+
+# Downloaded by setup.sh.
+qgc/
+camera/ortho/
+
+# Generated.
+camera/sign.png
+__pycache__/
+*.pyc
